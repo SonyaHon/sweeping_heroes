@@ -6,12 +6,19 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour {
 	ItemDatabase database;
 	GameObject slotPanel;
+	GameObject currentSlotPanel;
+
+	private bool isShowing = true;
+
+	Tooltip tooltip;
 
 	GameObject inventoryPanel;
+	GameObject currentInventoryPanel;
+
 	public GameObject inventorySlot;
 	public GameObject inventoryItem;
 
-	int slotAmount;
+	int slotAmount, currentSlotAmount;
 	public List<Item> items = new List<Item> ();
 	public List<GameObject> slots = new List<GameObject> ();
 
@@ -19,6 +26,8 @@ public class Inventory : MonoBehaviour {
 		database = GetComponent<ItemDatabase> ();
 
 		slotAmount = 9;
+		currentSlotAmount = 3;
+
 		inventoryPanel = GameObject.Find ("Inventory Panel");
 		slotPanel = inventoryPanel.transform.Find ("Slot Panel").gameObject;
 		for (int i = 0; i < slotAmount; i++) {
@@ -27,6 +36,17 @@ public class Inventory : MonoBehaviour {
 			slots [i].GetComponent<Slot>().slotID = i;
 			slots [i].transform.SetParent (slotPanel.transform);
 		}
+
+		//currentInventoryPanel = t.Find
+		currentSlotPanel = GameObject.Find ("Current Slot Panel").gameObject; //над потом более аккуратный поиск замутить
+		for (int i = slotAmount; i < currentSlotAmount+slotAmount ; i++) {
+			items.Add (new Item ());
+			slots.Add (Instantiate (inventorySlot));
+			slots [i].GetComponent<Slot>().slotID = i;
+			slots [i].transform.SetParent (currentSlotPanel.transform);
+		}
+
+		tooltip = this.GetComponent<Tooltip> ();
 
 		AddItem (0);
 		AddItem (1);
@@ -73,5 +93,16 @@ public class Inventory : MonoBehaviour {
 				return true;
 		}
 		return false;
+	}
+
+	void Update() {
+		if (Input.GetKeyDown (KeyCode.I)) {
+			isShowing = !isShowing;
+			inventoryPanel.SetActive (isShowing);
+			tooltip.Deactivate ();
+			//tooltip.SetActive (isShowing);
+			Debug.Log ("Key down");
+		}
+
 	}
 }
