@@ -15,6 +15,8 @@ public class FollowerShooterAI : MonoBehaviour
 
     private GameObject player;
 
+    private IBulletSpawner bulletSpawner;
+
     private Quaternion desiredRotation;
     private Vector2 desiredPosition;
 
@@ -27,6 +29,7 @@ public class FollowerShooterAI : MonoBehaviour
     {
         player = GameObject.Find(PlayerGameObjectName);
         rigidBody = GetComponent<Rigidbody2D>();
+        bulletSpawner = GetComponentInChildren<IBulletSpawner>();
     }
 
     void FixedUpdate()
@@ -49,6 +52,13 @@ public class FollowerShooterAI : MonoBehaviour
 
         if (moveTowardsPlayer)
             rigidBody.AddForce((-(Vector2)transform.position + desiredPosition).normalized * MovementSpeed * Time.deltaTime, ForceMode2D.Force);
+        else
+        {
+            if (bulletSpawner.CanSpawn())
+            {
+                bulletSpawner.SpawnBullet(diff.normalized);
+            }
+        }
 
 
         desiredRotation = Quaternion.Euler(0f, 0f, (180 / Mathf.PI) * Mathf.Atan2(diff.normalized.y, diff.normalized.x));

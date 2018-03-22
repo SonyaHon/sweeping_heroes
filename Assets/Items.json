@@ -3,12 +3,20 @@
 		"id": 0,
 		"title": "waatafuk?",
 		"impact": 1000,
-		"slug": "cursorSword_gold"
+		"slug": "cursorSword_gold",
+		"stackable": true,
+		"massImpact": 0.2,
+		"accelerationImpact": 0.3,
+		"velocityImpact": 0.15
 	},
 	{
 		"id": 1,
 		"title": "ebaka",
 		"impact": -2,
-		"slug": "cursorSword_silver"
+		"slug": "cursorSword_silver",
+		"stackable": false,
+		"massImpact": 0.1,
+		"accelerationImpact": 0.15,
+		"velocityImpact": 0.2		
 	}
 ]

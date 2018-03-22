@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 4985987408811228}
   - component: {fileID: 2569400268249229058}
   m_Layer: 31
-  m_Name: Floor
+  m_Name: Walls_turn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -459,6 +459,6 @@ Tilemap:
   - serializedVersion: 1
     m_DirtyIndex: 0
   - serializedVersion: 1
-    m_DirtyIndex: 2
+    m_DirtyIndex: 0
   - serializedVersion: 1
     m_DirtyIndex: 0
