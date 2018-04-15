@@ -5,12 +5,15 @@ using UnityEngine;
 public class PlayerControlls : MonoBehaviour {
 
 
-	public float INITIAL_MASS = 1.0f;
-	public float ACCELERATION_FROM_INPUT = 1.0f;
-	public float VELOCITY_DECAY_SPEED = 1.0f;
-	public float VECLOCITY_MINIMUM = 0.0001f;
-	public float VELOCITY_MAXIMUM = 100.0f;
-	public float ROTATION_SPEED = .5f;
+	GameObject inv_GameObject;
+	Inventory inv_class;
+
+	public float INITIAL_MASS = 0.0000001f;
+	public float ACCELERATION_FROM_INPUT = 0.0000001f;
+	public float VELOCITY_DECAY_SPEED = 0.0000001f;
+	public float VECLOCITY_MINIMUM = 0.00000000001f;
+	public float VELOCITY_MAXIMUM = 0.00001f;
+	public float ROTATION_SPEED = .00000005f;
 
 	private float current_mass;
 	private Vector2 current_velocity;
@@ -18,6 +21,9 @@ public class PlayerControlls : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		inv_GameObject = GameObject.FindWithTag ("Inventory");
+		inv_class = inv_GameObject.GetComponent<Inventory>();
+			
 		current_velocity = Vector2.zero;
 		current_acceleration = Vector2.zero;
 		current_mass = INITIAL_MASS;
@@ -63,19 +69,23 @@ public class PlayerControlls : MonoBehaviour {
 	}
 
 	float ModifyMassFromInventory() {
-		return current_mass;
+		return (current_mass * inv_class.GetMassImpact() );
 	}
 
 	Vector2 ModifyAccelerationFromInventory() {
-		return current_acceleration;
+		return ( current_acceleration * inv_class.GetVelocityImpact () );
 	}
 
 	Vector2  ModifyVelocityFromInventory() {
-		return current_velocity;
+		return ( current_velocity * inv_class.GetAccelerationImpact () );
 	}
 
 	void AddToMass(float value) {
 		this.current_mass += value;
+	}
+
+	void OnTriggerStay(Collider suchPlayer){
+		Debug.Log ("Я ЕБАЛ ЮНИТИ");
 	}
 
 

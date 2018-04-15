@@ -8,23 +8,39 @@ public class Slot : MonoBehaviour, IDropHandler {
 	private Inventory inv;
 
 	public void OnDrop(PointerEventData eventData){
+		Debug.Log ("OnDrop in slot");
 		ItemData droppedItem = eventData.pointerDrag.GetComponent<ItemData> ();
 		if (inv.items [slotID].ID == -1) {
 			inv.items [droppedItem.slot] = new Item ();
 			inv.items [slotID] = droppedItem.item;
 			droppedItem.slot = slotID;
 		} else {
-			Transform item = this.transform.GetChild (0);
-			item.GetComponent<ItemData>().slot = droppedItem.slot;
-			item.transform.SetParent (inv.slots [droppedItem.slot].transform);
-			item.transform.position = inv.slots [droppedItem.slot].transform.position;
+			if (this.transform.childCount == 1) {
+				
+				Transform item = this.transform.GetChild (0);
+				item.GetComponent<ItemData> ().slot = droppedItem.slot;
+				item.transform.SetParent (inv.slots [droppedItem.slot].transform);
+				item.transform.position = inv.slots [droppedItem.slot].transform.position;
 
-			droppedItem.slot = slotID;
-			droppedItem.transform.SetParent (this.transform);
-			droppedItem.transform.position = this.transform.position;
+				droppedItem.slot = slotID;
+				droppedItem.transform.SetParent (this.transform);
+				droppedItem.transform.position = this.transform.position;
 
-			inv.items [droppedItem.slot] = item.GetComponent<ItemData> ().item;
-			inv.items [slotID] = droppedItem.item;
+				inv.items [droppedItem.slot] = item.GetComponent<ItemData> ().item;
+				inv.items [slotID] = droppedItem.item;
+
+			} else {
+
+
+
+				droppedItem.slot = slotID;
+				droppedItem.transform.SetParent (this.transform);
+				droppedItem.transform.position = this.transform.position;
+
+
+
+			}
+
 		}
 	}
 
