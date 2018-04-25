@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Inventory
   - Wall
+  - playerBullet
   layers:
   - Default
   - TransparentFX

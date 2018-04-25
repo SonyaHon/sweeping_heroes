@@ -8,6 +8,8 @@ public class PlayerControlls : MonoBehaviour {
 	GameObject inv_GameObject;
 	Inventory inv_class;
 
+    public GameObject bulletPrefab;
+
 	public float INITIAL_MASS = 1f;
 	public float ACCELERATION_FROM_INPUT = 0.4f;
 	public float VECLOCITY_MINIMUM = 0.01f;
@@ -19,6 +21,10 @@ public class PlayerControlls : MonoBehaviour {
 
     public float DECAY_COEF = 0.2f;
     public float MASS_DECREAS_PERCENT_OVER_TIME = 0.1f;
+
+    public float FIRE_COOLDOWN_MS = 1000;
+    private float cur_timer = 0;
+    private bool fired = false;
 
     // Use this for initialization
     void Start () {
@@ -34,12 +40,37 @@ public class PlayerControlls : MonoBehaviour {
 	void Update () {
 		Vector3 mousePos = Input.mousePosition;
 		mousePos = Camera.main.ScreenToWorldPoint (mousePos);
-		Vector2 dir = new Vector2 (mousePos.x - transform.position.x, mousePos.y - transform.position.y);
-		transform.up = Vector2.Lerp(transform.up, -dir, ROTATION_SPEED);
+	    Vector2 dir = new Vector2 (mousePos.x - transform.position.x, mousePos.y - transform.position.y);
+        transform.up = Vector2.Lerp(transform.up, -dir, ROTATION_SPEED);
 
-       
+        if(fired)
+        {
+            cur_timer += Time.deltaTime;
+            if(cur_timer >= FIRE_COOLDOWN_MS)
+            {
+                cur_timer = 0;
+                fired = false;
+            }
+        }
+
+
+
+        if (Input.GetAxisRaw("Fire1") > 0 && fired == false)
+        {
+            this.Fire();
+            fired = true;
+            
+        }
 
 	}
+
+    private void Fire()
+    {
+        GameObject bl = Instantiate(bulletPrefab);
+        bl.transform.position = transform.position;
+        bl.transform.up = transform.up;
+        bl.transform.Rotate(0, 0, 90);
+    }
 
     private void FixedUpdate()
     {
