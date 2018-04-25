@@ -11,16 +11,17 @@ public class PlayerControlls : MonoBehaviour {
 	public float INITIAL_MASS = 1f;
 	public float ACCELERATION_FROM_INPUT = 0.4f;
 	public float VECLOCITY_MINIMUM = 0.01f;
-	public float VELOCITY_MAXIMUM = 100f;
 	public float ROTATION_SPEED = 0.2f;
-
 
 	private float current_mass;
 	private Vector2 current_velocity;
 	private Vector2 current_acceleration;
 
-	// Use this for initialization
-	void Start () {
+    public float DECAY_COEF = 0.2f;
+    public float MASS_DECREAS_PERCENT_OVER_TIME = 0.1f;
+
+    // Use this for initialization
+    void Start () {
 		inv_GameObject = GameObject.FindWithTag ("Inventory");
 		inv_class = inv_GameObject.GetComponent<Inventory>();
 			
@@ -35,41 +36,99 @@ public class PlayerControlls : MonoBehaviour {
 		mousePos = Camera.main.ScreenToWorldPoint (mousePos);
 		Vector2 dir = new Vector2 (mousePos.x - transform.position.x, mousePos.y - transform.position.y);
 		transform.up = Vector2.Lerp(transform.up, -dir, ROTATION_SPEED);
+
+       
+
 	}
 
-
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         float modified_mass = this.ModifyMassFromInventory();
-        float coef = (1 / (modified_mass / 5));
-        if (coef > 1) coef = 1;
-        if(Input.GetAxisRaw("Horizontal") != 0)
+        if(modified_mass == 1.0f)
         {
-            current_acceleration.x += ACCELERATION_FROM_INPUT * Input.GetAxisRaw("Horizontal") * coef ;
+            // we have instant stop
+
+            if (Input.GetAxisRaw("Horizontal") != 0)
+            {
+                current_acceleration.x = ACCELERATION_FROM_INPUT * Input.GetAxisRaw("Horizontal");
+            }
+            else
+            {
+                current_acceleration.x = 0;
+            }
+            if (Input.GetAxisRaw("Vertical") != 0)
+            {
+                current_acceleration.y = ACCELERATION_FROM_INPUT * Input.GetAxisRaw("Vertical");
+            }
+            else
+            {
+                current_acceleration.y = 0;
+            }
+
+            transform.position += new Vector3(current_acceleration.x, current_acceleration.y);
         }
-        if(Input.GetAxisRaw("Vertical") != 0)
+        else
         {
-            current_acceleration.y += ACCELERATION_FROM_INPUT * Input.GetAxisRaw("Vertical") * coef;
+            if (Input.GetAxisRaw("Horizontal") != 0)
+            {
+                current_acceleration.x = ACCELERATION_FROM_INPUT * Input.GetAxisRaw("Horizontal");
+            }
+            else
+            {
+                current_acceleration.x = 0;
+            }
+            if (Input.GetAxisRaw("Vertical") != 0)
+            {
+                current_acceleration.y = ACCELERATION_FROM_INPUT * Input.GetAxisRaw("Vertical");
+            }
+            else
+            {
+                current_acceleration.y = 0;
+            }
+
+            current_acceleration = this.ModifyAccelerationFromInventory();
+
+            if(current_acceleration.x != 0)
+            {
+                current_velocity = Vector2.Lerp(current_velocity, new Vector2(current_acceleration.x, current_velocity.y), DECAY_COEF);
+            }
+            else
+            {
+                current_velocity = Vector2.Lerp(current_velocity, new Vector2(0, current_velocity.y), DECAY_COEF / modified_mass);
+            }
+
+            if (current_acceleration.y != 0)
+            {
+                current_velocity = Vector2.Lerp(current_velocity, new Vector2(current_velocity.x, current_acceleration.y), DECAY_COEF);
+            }
+            else
+            {
+                current_velocity = Vector2.Lerp(current_velocity, new Vector2(current_velocity.x, 0), DECAY_COEF / modified_mass);
+            }
+
+
+            if (Mathf.Abs(current_velocity.x) <= VECLOCITY_MINIMUM)
+                current_velocity.x = 0;
+
+            if (Mathf.Abs(current_velocity.y) <= VECLOCITY_MINIMUM)
+                current_velocity.y = 0;
+
+            if (current_velocity != Vector2.zero) this.DecreaseMass();
+
+            transform.position += new Vector3(current_velocity.x, current_velocity.y);
         }
-        current_acceleration = this.ModifyAccelerationFromInventory();
-        current_velocity = current_acceleration;
-        current_velocity = this.ModifyVelocityFromInventory();
-        transform.position += new Vector3(current_velocity.x, current_velocity.y);
-        current_acceleration = Vector2.Lerp(current_acceleration, Vector2.zero, 1 / modified_mass);
-        if (Mathf.Abs(current_velocity.x) <= VECLOCITY_MINIMUM)
-            current_velocity.x = 0;
-        if (Mathf.Abs(current_velocity.y) <= VECLOCITY_MINIMUM)
-            current_velocity.y = 0;
-        if (Mathf.Abs(current_acceleration.x) <= VECLOCITY_MINIMUM)
-            current_acceleration.x = 0;
-        if (Mathf.Abs(current_acceleration.y) <= VECLOCITY_MINIMUM)
-            current_acceleration.y = 0;
     }
 
-    Vector2 ModifyFromMass(Vector2 initial) {
-		Vector2 val = initial * this.current_mass;
-		return val;
-	}
+    private void  AddToMass(float value)
+    {
+        this.current_mass += value;
+    }
+
+    private void DecreaseMass()
+    {
+        this.current_mass -= this.current_mass * MASS_DECREAS_PERCENT_OVER_TIME;
+        if (this.current_mass < 1) this.current_mass = 1;
+    }
 
 	float ModifyMassFromInventory() {
 		return (current_mass * inv_class.GetMassImpact() );

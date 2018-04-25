@@ -169,7 +169,7 @@ public class Inventory : MonoBehaviour {
 	}
 
 	public float GetMassImpact(){
-		float impact = 0;
+		float impact = 1;
 		for (int i = 0; i < currentSlotAmount; i++) {
 			if (slots [i].transform.childCount > 0) {
 				impact += items[ i ].massImpact;
@@ -179,7 +179,7 @@ public class Inventory : MonoBehaviour {
 	}
 
 	public float GetVelocityImpact(){
-		float impact = 0;
+		float impact = 1;
 		for (int i = 0; i < currentSlotAmount; i++) {
 			if (slots [i].transform.childCount > 0) {
 				impact += items[ i ].velocityImpact;
@@ -189,7 +189,7 @@ public class Inventory : MonoBehaviour {
 	}
 
 	public float GetAccelerationImpact(){
-		float impact = 0;
+		float impact = 1;
 		for (int i = 0; i < currentSlotAmount; i++) {
 			if (slots [i].transform.childCount > 0) {
 				impact += items[ i ].accelerationImpact;
